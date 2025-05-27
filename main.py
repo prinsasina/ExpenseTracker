@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 
+st.set_page_config(
+    page_title="Expense Tracker",
+    page_icon="💸",
+)
+
 def initialize_table():
     conn = sqlite3.connect('expenses.db')
     cur = conn.cursor()
@@ -44,13 +49,24 @@ if (mode=="Input"):
         if submitted:
             add(item, price, category, date, description)
             st.success("Expense added")
+
 elif (mode=="File uploading"):
-    st.file_uploader("Upload your input file", type=["csv"], key="uploaded_file")
+    uploaded_file = st.file_uploader("Upload your input file", type=["csv"])
+    if uploaded_file:
+        try:
+            df_upload = pd.read_csv(uploaded_file)
+            required_columns = {"item", "price", "category", "date", "description"}
+            if required_columns.issubset(df_upload.columns):
+                for _, row in df_upload.iterrows():
+                    add(row["item"], row["price"], row["category"], row["date"], row["description"])
+                st.success("Expenses uploaded successfully")
+        except:
+            st.error("Error reading file")
 
 st.subheader("Total expenses")
 conn = sqlite3.connect('expenses.db')
 df = pd.read_sql_query("""
-                        SELECT * FROM expenses
+                        SELECT date, item, price, category, description FROM expenses
                        """, conn)
 st.dataframe(df)
 
