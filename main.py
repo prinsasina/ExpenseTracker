@@ -30,17 +30,22 @@ def add(item, price, category, date, description):
 initialize_table()
 st.title("Expense Tracker")
 
-with st.form("expense_form"):
-    item = st.text_input("Item: ")
-    price = st.number_input("Price: ", min_value=0.0, format="%.2f")
-    category = st.text_input("Category: ")
-    date = st.date_input("Date: ")
-    description = st.text_input("Description: ")
+mode = st.radio("Select input method:", ["Input","File uploading"])
 
-    submitted = st.form_submit_button("Add expense")
-    if submitted:
-        add(item, price, category, date, description)
-        st.success("Expense added")
+if (mode=="Input"):
+    with st.form("expense_form"):
+        item = st.text_input("Item: ")
+        price = st.number_input("Price: ", min_value=0.0, format="%.2f")
+        category = st.text_input("Category: ")
+        date = st.date_input("Date: ")
+        description = st.text_input("Description: ")
+
+        submitted = st.form_submit_button("Add expense")
+        if submitted:
+            add(item, price, category, date, description)
+            st.success("Expense added")
+elif (mode=="File uploading"):
+    st.file_uploader("Upload your input file", type=["csv"], key="uploaded_file")
 
 st.subheader("Total expenses")
 conn = sqlite3.connect('expenses.db')
