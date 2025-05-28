@@ -55,11 +55,14 @@ elif (mode=="File uploading"):
     if uploaded_file:
         try:
             df_upload = pd.read_csv(uploaded_file)
-            required_columns = {"item", "price", "category", "date", "description"}
-            if required_columns.issubset(df_upload.columns):
-                for _, row in df_upload.iterrows():
-                    add(row["item"], row["price"], row["category"], row["date"], row["description"])
-                st.success("Expenses uploaded successfully")
+            st.dataframe(df_upload)
+            uploaded = st.button("Upload")
+            if uploaded:
+                required_columns = {"item", "price", "category", "date", "description"}
+                if required_columns.issubset(df_upload.columns):
+                    for _, row in df_upload.iterrows():
+                        add(row["item"], row["price"], row["category"], row["date"], row["description"])
+                    st.success("Expenses uploaded successfully")
         except:
             st.error("Error reading file")
 
