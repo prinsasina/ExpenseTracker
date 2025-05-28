@@ -73,4 +73,9 @@ df = pd.read_sql_query("""
                        """, conn)
 st.dataframe(df)
 
+sum = pd.read_sql_query("""
+                        SELECT SUM(price) FROM expenses
+                        """, conn)
+st.write(sum)
+
 conn.close()
