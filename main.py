@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
+import matplotlib.pyplot as plt
+import numpy as np
+import plotly.express as px
 
 st.set_page_config(
     page_title="Expense Tracker",
@@ -77,5 +80,22 @@ sum = pd.read_sql_query("""
                         SELECT SUM(price) FROM expenses
                         """, conn)
 st.write(sum)
+
+cur = conn.cursor()
+cur.execute("""
+            SELECT SUM(price), category FROM expenses GROUP BY category
+            """)
+pie_data = cur.fetchall()
+price_data = []
+category_data = []
+
+for i in pie_data:
+    price_data.append(i[0])
+    category_data.append(i[1])
+
+df = pd.DataFrame({"category": category_data, "amount": price_data})
+fig = px.pie(df, values="amount", names="category", title="Expenses Breakdown")
+st.plotly_chart(fig)
+
 
 conn.close()
