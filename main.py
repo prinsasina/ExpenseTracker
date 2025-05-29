@@ -35,6 +35,15 @@ def add(item, price, category, date, description):
     conn.commit()
     conn.close()
 
+def delete_row(id):
+    conn = sqlite3.connect('expenses.db')
+    cur = conn.cursor()
+    cur.execute("""
+                DELETE FROM expenses WHERE id = ?
+                """, (id,))
+    conn.commit()
+    conn.close()
+
 initialize_table()
 st.title("Expense Tracker")
 
@@ -58,7 +67,7 @@ elif (mode=="File uploading"):
     if uploaded_file:
         try:
             df_upload = pd.read_csv(uploaded_file)
-            st.dataframe(df_upload)
+            st.dataframe(df_upload, hide_index=True)
             uploaded = st.button("Upload")
             if uploaded:
                 required_columns = {"item", "price", "category", "date", "description"}
@@ -72,14 +81,27 @@ elif (mode=="File uploading"):
 st.subheader("Total expenses")
 conn = sqlite3.connect('expenses.db')
 df = pd.read_sql_query("""
-                        SELECT date, item, price, category, description FROM expenses
+                        SELECT * FROM expenses
                        """, conn)
-st.dataframe(df)
 
-sum = pd.read_sql_query("""
+for i, row in df.iterrows():
+    cols = st.columns((1,1,1,1,1,1))
+    cols[0].write(row["date"])
+    cols[1].write(row["item"])
+    cols[2].write(row["price"])
+    cols[3].write(row["category"])
+    cols[4].write(row["description"])
+    
+    if cols[5].button("Delete", key=f"delete_{row['id']}"):
+        delete_row(row['id'])
+        st.rerun()
+
+sum_data = pd.read_sql_query("""
                         SELECT SUM(price) FROM expenses
                         """, conn)
-st.write(sum)
+sum_df = pd.DataFrame(sum_data)
+sum = sum_df.loc[0,"SUM(price)"]
+st.markdown(f"Total spent is {sum}")
 
 cur = conn.cursor()
 cur.execute("""
