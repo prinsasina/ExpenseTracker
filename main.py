@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
-import matplotlib.pyplot as plt
-import numpy as np
 import plotly.express as px
 
 st.set_page_config(
@@ -106,7 +104,7 @@ sum_data = pd.read_sql_query("""
                         """, conn)
 sum_df = pd.DataFrame(sum_data)
 sum = sum_df.loc[0,"SUM(price)"]
-st.markdown(f"Total spent is {sum}")
+st.markdown(f"**Total spent is {sum}**")
 
 cur = conn.cursor()
 cur.execute("""
