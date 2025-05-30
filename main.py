@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
+import matplotlib
 import plotly.express as px
 
 st.set_page_config(
