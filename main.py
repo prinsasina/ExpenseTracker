@@ -84,13 +84,18 @@ df = pd.read_sql_query("""
                         SELECT * FROM expenses
                        """, conn)
 
+headers_cols = st.columns((1, 1, 1, 1, 1, 1))
+headers = [(0, "Date"), (1, "Item"), (2, "Price"), (3, "Category"), (4, "Description"), (5, "Delete")]
+for (i, header) in headers:
+    headers_cols[i].markdown(f"**{header}**")
+
 for i, row in df.iterrows():
-    cols = st.columns((1,1,1,1,1,1))
-    cols[0].write(row["date"])
-    cols[1].write(row["item"])
-    cols[2].write(row["price"])
-    cols[3].write(row["category"])
-    cols[4].write(row["description"])
+    cols = st.columns((1, 1, 1, 1, 1, 1))
+    cols[0].markdown(row["date"])
+    cols[1].markdown(row["item"])
+    cols[2].markdown(row["price"])
+    cols[3].markdown(row["category"])
+    cols[4].markdown(row["description"])
     
     if cols[5].button("Delete", key=f"delete_{row['id']}"):
         delete_row(row['id'])
