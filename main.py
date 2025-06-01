@@ -123,5 +123,16 @@ df = pd.DataFrame({"category": category_data, "amount": price_data})
 fig = px.pie(df, values="amount", names="category", title="Expenses Breakdown")
 st.plotly_chart(fig)
 
+st.subheader("Montly Summary Report")
 
+df = pd.read_sql_query("SELECT date, price FROM expenses", conn)
+df['date'] = pd.to_datetime(df['date'])
+df['month'] = df['date'].dt.to_period('M')
+
+monthly_summary = df.groupby('month')['price'].sum().reset_index()
+monthly_summary['month'] = monthly_summary['month'].astype(str)
+
+st.dataframe(monthly_summary.rename(columns={"month":"Month", "price":"Total Spent"}))
+
+fig = px.bar(monthly_summary, x='month', y='price')
 conn.close()
